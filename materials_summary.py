@@ -35,7 +35,6 @@ BUYING_SHEET = "Buying List"
 FIRST_WORK_ROW = 12
 LAST_WORK_ROW = 250
 PLACEHOLDER = "select work task"
-
 PIPE_LENGTH_M = 3.0
 
 
@@ -61,6 +60,15 @@ class MaterialTotal:
 
 def clean(value: Any) -> str:
     return str(value or "").strip()
+
+
+def clean_unit(value: Any, fallback: str = "") -> str:
+    text = clean(value)
+    if not text or text.startswith("=") or "XLOOKUP" in text.upper():
+        text = clean(fallback)
+    if not text or text.startswith("="):
+        return "each"
+    return text
 
 
 def num(value: Any, default: float = 0.0) -> float:
@@ -170,7 +178,7 @@ def build_totals(wb) -> tuple[list[WorkLine], dict[str, MaterialTotal]]:
                     code=code,
                     item=clean(price.get("item") or material["material_item"] or code),
                     spec=clean(price.get("spec")),
-                    unit=clean(material["unit"] or price.get("unit")),
+                    unit=clean_unit(price.get("unit"), material.get("unit")),
                     qty=0.0,
                     sell_ex_vat=num(material["unit_sell_ex_vat"] or price.get("sell_ex_vat"), 0),
                     source_tasks=set(),
