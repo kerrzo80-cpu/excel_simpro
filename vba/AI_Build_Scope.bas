@@ -15,11 +15,11 @@ Public Sub AI_Build_Scope()
     If Trim(worksDescription) = "" Then Exit Sub
 
     repoDir = Environ("HOME") & "/Downloads/excel_simpro"
-    logFile = Environ("HOME") & "/Desktop/ai_scope_last_run.txt"
+    logFile = repoDir & "/ai_scope_last_run.txt"
 
     commandText = "/bin/zsh -lc " & Chr(34) & _
                   "cd " & ShellQuote(repoDir) & " && " & _
-                  "python3 ai_scope_insert_v7.py --insert --yes " & ShellQuote(worksDescription) & _
+                  "/usr/bin/python3 ai_scope_insert_v7.py --insert --yes " & ShellQuote(worksDescription) & _
                   " > " & ShellQuote(logFile) & " 2>&1" & _
                   Chr(34)
 
