@@ -6,9 +6,6 @@ range from a known-good archived workbook. It does not replace the whole file.
 
 Usage:
   python3 repair_works_area_from_archive.py --donor "/path/to/good/archive.xlsm"
-
-Default live workbook:
-  OneDrive-ErrolWatsonGroup/Quoting/Works Pricing Tool V3 BACKUP before visual style 2026-05-27 09-11.xlsm
 """
 
 from __future__ import annotations
@@ -65,7 +62,7 @@ def main() -> int:
     shutil.copy2(live, backup)
     print("Backup created:", backup)
 
-    app = xw.App(visible=False, add_book=False)
+    app = xw.App(visible=True, add_book=False)
     try:
         donor_book = app.books.open(str(donor))
         live_book = app.books.open(str(live))
@@ -73,9 +70,9 @@ def main() -> int:
             donor_sheet = get_sheet(donor_book, SHEET_NAME)
             live_sheet = get_sheet(live_book, SHEET_NAME)
 
-            # Copy all formatting, formulas, values, data validation and dropdowns
-            # for the entry area from the donor into the live workbook.
-            donor_sheet.range(RANGE_TO_REPAIR).api.Copy(live_sheet.range(RANGE_TO_REPAIR).api)
+            # Mac Excel supports copy/paste via xlwings Range.copy destination.
+            # This preserves formulas, formatting and data validation/dropdowns better than assigning values.
+            donor_sheet.range(RANGE_TO_REPAIR).copy(destination=live_sheet.range(RANGE_TO_REPAIR))
 
             live_book.save()
             print("Repair complete. Copied", RANGE_TO_REPAIR, "from donor into live workbook.")
